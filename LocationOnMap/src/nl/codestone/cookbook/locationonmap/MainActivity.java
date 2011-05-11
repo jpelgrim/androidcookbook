@@ -16,25 +16,36 @@ import com.google.android.maps.Overlay;
 
 public class MainActivity extends MapActivity {
 
-    GeoPoint myLocationGeoPoint = new GeoPoint(52334822, 4668907);
+    GeoPoint geoPoint = new GeoPoint((int) (52.334822 * 1E6), (int) (4.668907 * 1E6));
 
-    class MyOverlay extends com.google.android.maps.Overlay {
+    private class MyOverlay extends com.google.android.maps.Overlay {
 
         @Override
-        public boolean draw(Canvas canvas, MapView mapView, boolean shadow, long when) {
+        public void draw(Canvas canvas, MapView mapView, boolean shadow) {
             super.draw(canvas, mapView, shadow);
 
-            Point myLocationPoint = new Point();
-            mapView.getProjection().toPixels(myLocationGeoPoint, myLocationPoint);
+            if (!shadow) {
 
-            // ---add the marker---
-            Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.marker_default);
-            int x = myLocationPoint.x - bmp.getWidth() / 2;
-            int y = myLocationPoint.y - bmp.getHeight();
-            canvas.drawBitmap(bmp, x, y, null);
+                Point point = new Point();
+                mapView.getProjection().toPixels(geoPoint, point);
 
-            return true;
+                Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.marker_default);
+
+                /** 
+                 * Shift it left so the center of the image is aligned with the x-coordinate of the geo point
+                 */
+                int x = point.x - bmp.getWidth() / 2;
+
+                /** 
+                 * Shift it upward so the bottom of the image is aligned with the y-coordinate of the geo point
+                 */
+                int y = point.y - bmp.getHeight();
+
+                canvas.drawBitmap(bmp, x, y, null);
+
+            }
         }
+
     }
 
     @Override
@@ -43,13 +54,12 @@ public class MainActivity extends MapActivity {
         setContentView(R.layout.main);
 
         MapView mapView = (MapView) findViewById(R.id.mapview);
-        mapView.setSatellite(true);
         mapView.setBuiltInZoomControls(true);
-        mapView.displayZoomControls(true);
+        mapView.setSatellite(true);
 
         MapController mc = mapView.getController();
         mc.setZoom(18);
-        mc.animateTo(myLocationGeoPoint);
+        mc.animateTo(geoPoint);
 
         List<Overlay> overlays = mapView.getOverlays();
         overlays.clear();
