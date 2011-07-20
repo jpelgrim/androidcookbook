@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="nl.codestone.cookbook.smsmylocation"
+      android:versionCode="1"
+      android:versionName="1.0">
+	<uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />  
+    <uses-permission android:name="android.permission.ACCESS_COURSE_LOCATION" /> 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	
+	<!-- In order to receive location updates from NETWORK_PROVIDER or GPS_PROVIDER, you must request user permission by declaring either the ACCESS_COARSE_LOCATION or ACCESS_FINE_LOCATION permission, respectively, in your Android manifest file. -->
+      
+    <uses-sdk android:minSdkVersion="4" />
+
+    <application android:icon="@drawable/icon" android:label="SMS My Phone Location" android:debuggable="true">
+		
+        <receiver android:name="IncomingSmsInterceptor">
+            <intent-filter>
+                 <action android:name="android.provider.Telephony.SMS_RECEIVED"></action>
+            </intent-filter>
+        </receiver>
+
+    </application>
+</manifest>
