@@ -36,15 +36,15 @@ public class MainActivity extends Activity implements OnItemClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         this.setProgressBarIndeterminateVisibility(false);
-        
+
         setContentView(R.layout.main);
         mListView = (ListView) findViewById(R.id.listView1);
         mListView.setTextFilterEnabled(true);
         mListView.setOnItemClickListener(this);
-        
+
         mRefresh1 = (Button) findViewById(R.id.button1);
         mRefresh1.setOnClickListener(new OnClickListener() {
 
@@ -52,22 +52,21 @@ public class MainActivity extends Activity implements OnItemClickListener {
             public void onClick(View v) {
                 LoadRecipesTask1 mLoadRecipesTask = new LoadRecipesTask1();
                 mLoadRecipesTask.execute("http://androidcookbook.com/seam/resource/rest/recipe/list");
-                MainActivity.this.setProgressBarIndeterminateVisibility(true); 
             }
         });
 
         mRefresh2 = (Button) findViewById(R.id.button2);
         mRefresh2.setOnClickListener(new OnClickListener() {
-            
+
             @Override
             public void onClick(View v) {
                 LoadRecipesTask2 mLoadRecipesTask = new LoadRecipesTask2();
                 String url = "http://androidcookbook.com/seam/resource/rest/recipe/list";
-                showDialog(DIALOG_KEY);
-                mLoadRecipesTask.execute(url,url,url,url,url);
+                showDialog(DIALOG_KEY);                                                     // 1
+                mLoadRecipesTask.execute(url, url, url, url, url);                          // 2
             }
         });
-        
+
         mClear = (Button) findViewById(R.id.button3);
         mClear.setOnClickListener(new OnClickListener() {
             @Override
@@ -75,17 +74,17 @@ public class MainActivity extends Activity implements OnItemClickListener {
                 mListView.setAdapter(null);
             }
         });
-        
+
     }
-    
+
     @Override
     protected Dialog onCreateDialog(int id) {
         switch (id) {
-        case DIALOG_KEY:
+        case DIALOG_KEY:                                                               // 1
             mProgressDialog = new ProgressDialog(this);
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            mProgressDialog.setMessage("Retrieving recipes...");
-            mProgressDialog.setCancelable(false);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);         // 2
+            mProgressDialog.setMessage("Retrieving recipes...");                       // 3
+            mProgressDialog.setCancelable(false);                                      // 4
             return mProgressDialog;
         }
         return null;
@@ -168,7 +167,12 @@ public class MainActivity extends Activity implements OnItemClickListener {
     }
 
     protected class LoadRecipesTask1 extends AsyncTask<String, Void, ArrayList<Datum>> {
-        
+
+        @Override
+        protected void onPreExecute() {
+            MainActivity.this.setProgressBarIndeterminateVisibility(true);
+        }
+
         @Override
         protected ArrayList<Datum> doInBackground(String... urls) {
             ArrayList<Datum> datumList = new ArrayList<Datum>();
@@ -185,20 +189,24 @@ public class MainActivity extends Activity implements OnItemClickListener {
         @Override
         protected void onPostExecute(ArrayList<Datum> result) {
             mListView.setAdapter(new ArrayAdapter<Datum>(MainActivity.this, R.layout.list_item, result));
-            MainActivity.this.setProgressBarIndeterminateVisibility(false); 
+            MainActivity.this.setProgressBarIndeterminateVisibility(false);
         }
     }
 
     protected class LoadRecipesTask2 extends AsyncTask<String, Integer, ArrayList<Datum>> {
         
         @Override
+        protected void onPreExecute() {
+            mProgressDialog.show();                                                          // 1
+        }
+        
+        @Override
         protected ArrayList<Datum> doInBackground(String... urls) {
             ArrayList<Datum> datumList = new ArrayList<Datum>();
-            mProgressDialog.show();
-            for (int i = 0; i < urls.length; i++) {
+            for (int i = 0; i < urls.length; i++) {                                          // 2
                 try {
                     datumList = parse(urls[i]);
-                    publishProgress((int) (((i+1) / (float) urls.length) * 100));
+                    publishProgress((int) (((i+1) / (float) urls.length) * 100));            // 3
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (XmlPullParserException e) {
@@ -209,15 +217,15 @@ public class MainActivity extends Activity implements OnItemClickListener {
         }
         
         @Override
-        protected void onProgressUpdate(Integer... values) {
-            mProgressDialog.setProgress(values[0]);
+        protected void onProgressUpdate(Integer... values) {                                 // 4
+            mProgressDialog.setProgress(values[0]);                                          // 5
         }
         
         @Override
         protected void onPostExecute(ArrayList<Datum> result) {
             mListView.setAdapter(new ArrayAdapter<Datum>(MainActivity.this, R.layout.list_item, result));
-            mProgressDialog.dismiss(); 
+            mProgressDialog.dismiss();                                                       // 6
         }
     }
-    
+
 }
