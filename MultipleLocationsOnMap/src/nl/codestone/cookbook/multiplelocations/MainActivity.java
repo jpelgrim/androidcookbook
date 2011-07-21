@@ -31,14 +31,14 @@ public class MainActivity extends MapActivity {
         itemizedOverlay = new MyItemizedOverlay(drawable);        
         
         addOverlayItem(52372991, 4892655, "Amsterdam");
-        addOverlayItem(51924216, 4481776, "Rotterdam");
-        addOverlayItem(52090142, 5109665, "Utrecht");
+        addOverlayItem(51501851, -140623, "London");
+        addOverlayItem(48858518,  229478, "Paris");
         
         mapOverlays.add(itemizedOverlay);
         
         MapController mc = mapView.getController();
-        mc.setZoom(8);
-        mc.animateTo(new GeoPoint(52090142, 5109665));
+        mc.setZoom(6);
+        mc.animateTo(new GeoPoint(50666872, 2988281)); // Lille, Belgium
         
     }
 
