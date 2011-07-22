@@ -33,9 +33,9 @@ public class MainActivity extends MapActivity {
         drawable = this.getResources().getDrawable(R.drawable.marker_default);
         itemizedOverlay = new MyItemizedOverlay(drawable);        
         
-        addOverlayItem(52372991, 4892655, null, "Amsterdam", null);
+        addOverlayItem(52372991, 4892655, "Windmill", "Amsterdam", R.drawable.windmill);
         addOverlayItem(51501851, -140623, "Big Ben", "London", R.drawable.big_ben);
-        addOverlayItem(48857522, 2294496, "Eifell Tower", "Paris", R.drawable.eiffel_tower);
+        addOverlayItem(48857522, 2294496, "Eiffel Tower", "Paris", R.drawable.eiffel_tower);
         
         mapOverlays.add(itemizedOverlay);
         
@@ -50,10 +50,10 @@ public class MainActivity extends MapActivity {
         OverlayItem overlayitem = new OverlayItem(point, title, snippet);
         if (altMarker != null) {
             Drawable marker = getResources().getDrawable(altMarker);
-            marker.setBounds(-marker.getIntrinsicWidth()/2, -marker.getIntrinsicHeight(), marker.getIntrinsicWidth() /2, 0);
-            overlayitem.setMarker(marker);
+            itemizedOverlay.addOverlay(overlayitem, marker);
+        } else {
+            itemizedOverlay.addOverlay(overlayitem);
         }
-        itemizedOverlay.addOverlay(overlayitem);
     }
 
     @Override
@@ -74,6 +74,11 @@ public class MainActivity extends MapActivity {
             populate();
         }
 
+        public void addOverlay(OverlayItem overlay, Drawable altMarker) {
+            overlay.setMarker(boundCenterBottom(altMarker));
+            addOverlay(overlay);
+        }
+        
         @Override
         protected OverlayItem createItem(int i) {
             return mOverlays.get(i);
@@ -83,7 +88,7 @@ public class MainActivity extends MapActivity {
         public int size() {
             return mOverlays.size();
         }
-
+        
         @Override
         protected boolean onTap(int index) {
             Toast.makeText(MainActivity.this, getItem(index).getTitle(), Toast.LENGTH_LONG).show();
