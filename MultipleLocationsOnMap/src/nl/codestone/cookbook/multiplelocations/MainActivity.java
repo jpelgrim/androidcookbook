@@ -12,15 +12,10 @@ import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
-import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
 public class MainActivity extends MapActivity {
 
-    List<Overlay> mapOverlays;
-    Drawable drawable;
-    MyItemizedOverlay itemizedOverlay;
-    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,56 +24,54 @@ public class MainActivity extends MapActivity {
         mapView.setBuiltInZoomControls(true);
         mapView.setSatellite(true);
 
-        mapOverlays = mapView.getOverlays();
-        drawable = this.getResources().getDrawable(R.drawable.marker_default);
-        itemizedOverlay = new MyItemizedOverlay(drawable);        
-        
-        addOverlayItem(52372991, 4892655, "Windmill", "Amsterdam", R.drawable.windmill);
-        addOverlayItem(51501851, -140623, "Big Ben", "London", R.drawable.big_ben);
-        addOverlayItem(48857522, 2294496, "Eiffel Tower", "Paris", R.drawable.eiffel_tower);
-        
-        mapOverlays.add(itemizedOverlay);
-        
-        MapController mc = mapView.getController();
-        mc.setCenter(new GeoPoint(51035349,2370987));
-        mc.zoomToSpan(itemizedOverlay.getLatSpanE6(), itemizedOverlay.getLonSpanE6());
-        
-    }
+        Drawable makerDefault = this.getResources().getDrawable(R.drawable.marker_default);
+        MyItemizedOverlay itemizedOverlay = new MyItemizedOverlay(makerDefault);
 
-    private void addOverlayItem(int lat, int lon, String snippet, String title, Integer altMarker) {
-        GeoPoint point = new GeoPoint(lat, lon);
-        OverlayItem overlayitem = new OverlayItem(point, title, snippet);
-        if (altMarker != null) {
-            Drawable marker = getResources().getDrawable(altMarker);
-            itemizedOverlay.addOverlay(overlayitem, marker);
-        } else {
-            itemizedOverlay.addOverlay(overlayitem);
-        }
+        Drawable windmill = getResources().getDrawable(R.drawable.windmill);
+        Drawable bigBen = getResources().getDrawable(R.drawable.big_ben);
+        Drawable eiffelTower = getResources().getDrawable(R.drawable.eiffel_tower);
+        
+        itemizedOverlay.addOverlayItem(52372991, 4892655, "Amsterdam", windmill);
+        itemizedOverlay.addOverlayItem(51501851, -140623, "London", bigBen);
+        itemizedOverlay.addOverlayItem(48857522, 2294496, "Paris", eiffelTower);
+
+        mapView.getOverlays().add(itemizedOverlay);
+
+        MapController mc = mapView.getController();
+        mc.setCenter(new GeoPoint(51035349, 2370987)); // Dunkerque, Belgium
+        mc.zoomToSpan(itemizedOverlay.getLatSpanE6(), itemizedOverlay.getLonSpanE6());
+
     }
 
     @Override
     protected boolean isRouteDisplayed() {
         return false;
     }
-    
+
     private class MyItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 
-        private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
+        private List<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
 
         public MyItemizedOverlay(Drawable defaultMarker) {
             super(boundCenterBottom(defaultMarker));
         }
 
-        public void addOverlay(OverlayItem overlay) {
-            mOverlays.add(overlay);
+        public void addOverlayItem(int lat, int lon, String title, Drawable altMarker) {
+            GeoPoint point = new GeoPoint(lat, lon);
+            OverlayItem overlayItem = new OverlayItem(point, title, null);
+            addOverlayItem(overlayItem, altMarker);
+        }
+
+        public void addOverlayItem(OverlayItem overlayItem) {
+            mOverlays.add(overlayItem);
             populate();
         }
 
-        public void addOverlay(OverlayItem overlay, Drawable altMarker) {
-            overlay.setMarker(boundCenterBottom(altMarker));
-            addOverlay(overlay);
+        public void addOverlayItem(OverlayItem overlayItem, Drawable altMarker) {
+            overlayItem.setMarker(boundCenterBottom(altMarker));
+            addOverlayItem(overlayItem);
         }
-        
+
         @Override
         protected OverlayItem createItem(int i) {
             return mOverlays.get(i);
@@ -88,14 +81,13 @@ public class MainActivity extends MapActivity {
         public int size() {
             return mOverlays.size();
         }
-        
+
         @Override
         protected boolean onTap(int index) {
             Toast.makeText(MainActivity.this, getItem(index).getTitle(), Toast.LENGTH_LONG).show();
-            Toast.makeText(MainActivity.this, getItem(index).getSnippet(), Toast.LENGTH_LONG).show();
             return true;
         }
 
     }
-    
+
 }
