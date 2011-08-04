@@ -7,14 +7,14 @@
 
     <application android:icon="@drawable/icon" android:label="Incoming Call Interceptor">
 
-        <receiver android:name="IncomingCallInterceptor">                     <!-- 5 -->
-            <intent-filter>
-                 <action android:name="android.intent.action.PHONE_STATE"/>   <!-- 6 -->
+        <receiver android:name="IncomingCallInterceptor">                     <!-- 6 -->
+            <intent-filter>                                                   <!-- 7 -->
+                 <action android:name="android.intent.action.PHONE_STATE"/>   <!-- 8 -->
             </intent-filter>
         </receiver>
 
     </application>
 
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>     <!-- 7 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>     <!-- 9 -->
     
 </manifest>
