@@ -1,7 +1,10 @@
 package nl.codestone.cookbook.mylocationoverlayexample;
 
+import android.content.Context;
+import android.location.Location;
 import android.os.Bundle;
 
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
@@ -9,24 +12,23 @@ import com.google.android.maps.MyLocationOverlay;
 
 public class MainActivity extends MapActivity {
     
-    private MyLocationOverlay mMyLocationOverlay;
+    private MyLocationOverlayExtension mMyLocationOverlay;
     private MapController mMapController;
-    private MapView mMapView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        mMapView = (MapView) findViewById(R.id.mapview);
-        mMapView.setBuiltInZoomControls(true);
-        mMapView.setSatellite(false);
+        MapView mapView = (MapView) findViewById(R.id.mapview);
+        mapView.setBuiltInZoomControls(true);
+        mapView.setSatellite(true);
 
-        mMyLocationOverlay = new MyLocationOverlay(this, mMapView);
+        mMyLocationOverlay = new MyLocationOverlayExtension(this, mapView);
 
-        mMapView.getOverlays().add(mMyLocationOverlay);
-        mMapView.postInvalidate();
+        mapView.getOverlays().add(mMyLocationOverlay);
+        mapView.postInvalidate();
 
-        mMapController = mMapView.getController();
+        mMapController = mapView.getController();
         mMapController.setZoom(17);
         mMyLocationOverlay.runOnFirstFix(new Runnable() {
             @Override
@@ -52,6 +54,21 @@ public class MainActivity extends MapActivity {
     @Override
     protected boolean isRouteDisplayed() {
         return false;
+    }
+    
+    private class MyLocationOverlayExtension extends MyLocationOverlay {
+
+        public MyLocationOverlayExtension(Context context, MapView mapView) {
+            super(context, mapView);
+        }
+        
+        @Override
+        public synchronized void onLocationChanged(Location location) {
+            super.onLocationChanged(location);
+            GeoPoint point = new GeoPoint((int) (location.getLatitude() * 1E6), (int) (location.getLongitude() * 1E6));
+            mMapController.animateTo(point);
+        }
+        
     }
     
 }
