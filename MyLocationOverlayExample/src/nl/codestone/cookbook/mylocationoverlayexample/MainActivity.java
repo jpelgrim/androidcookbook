@@ -29,7 +29,7 @@ public class MainActivity extends MapActivity {
         mapView.postInvalidate();
 
         mMapController = mapView.getController();
-        mMapController.setZoom(17);
+        mMapController.setZoom(19);
         mMyLocationOverlay.runOnFirstFix(new Runnable() {
             @Override
             public void run() {
