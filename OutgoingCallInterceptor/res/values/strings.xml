@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OutgoingCallInterceptor</string>
+    <string name="app_info">Dummy activity, because after Honeycomb (specifically Android 3.1) it is required to get the
+        app out of the STOPPED state (i.e. you have to manually start it once) before you can receive broadcast messages
+    </string>
+</resources>

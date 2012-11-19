@@ -1,4 +1,4 @@
-package nl.codestone.cookbook.outgoingcallinterceptor;
+package nl.codestone.androidcookbook.outgoingcallinterceptor;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
